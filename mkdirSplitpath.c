@@ -38,6 +38,7 @@ void mkdir(char pathName[]) {
 	char dirName[64];
 	char baseName[64];
 	struct NODE* dirToInsert = splitPath(pathName, baseName, dirName);
+	strncpy(newPath->name, baseName, 64);
 	if (dirToInsert == NULL) {
 		return;
 	}
