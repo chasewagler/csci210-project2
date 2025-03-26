@@ -1,4 +1,4 @@
-#include "types.h" 
+#include "types.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,21 +8,24 @@ extern struct NODE* cwd;
 
 //make directory
 void mkdir(char pathName[]) {
+	char dirName[64];
+        char baseName[64];
+        struct NODE* dirToInsert = splitPath(pathName, baseName, dirName);
 	//check if dir is empty
 	if (strcmp(pathName, "/") == 0) {
 		printf("MKDIR ERROR: no path provided\n");
 		return;
 	}
 
-        struct NODE* currentChild = cwd->childPtr;
+        struct NODE* currentChild = dirToInsert->childPtr;
 
 	//check for duplicate dir
         while (currentChild != NULL) {
-        	if (strcmp(currentChild->name, pathName) == 0) {
+        	if (strcmp(currentChild->name, baseName) == 0) {
         		printf("MKDIR ERROR: directory %s already exists\n", pathName);
         		return;
         	}
-        currentChild = currentChild->siblingPtr;
+        	currentChild = currentChild->siblingPtr;
     	}
 
 	//new node
@@ -34,9 +37,6 @@ void mkdir(char pathName[]) {
     	newPath->siblingPtr = NULL;
 
     	//insert node
-	char dirName[64];
-	char baseName[64];
-	struct NODE* dirToInsert = splitPath(pathName, baseName, dirName);
 	strncpy(newPath->name, baseName, 64);
 	newPath->parentPtr = dirToInsert;
 	if (dirToInsert == NULL) {
