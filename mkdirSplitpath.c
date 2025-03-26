@@ -11,6 +11,9 @@ void mkdir(char pathName[]) {
 	char dirName[64];
         char baseName[64];
         struct NODE* dirToInsert = splitPath(pathName, baseName, dirName);
+	if (dirToInsert == NULL) {
+                return;
+        }
 	//check if dir is empty
 	if (strcmp(pathName, "/") == 0) {
 		printf("MKDIR ERROR: no path provided\n");
@@ -39,9 +42,6 @@ void mkdir(char pathName[]) {
     	//insert node
 	strncpy(newPath->name, baseName, 64);
 	newPath->parentPtr = dirToInsert;
-	if (dirToInsert == NULL) {
-		return;
-	}
 	if (dirToInsert->childPtr == NULL) {
         	dirToInsert->childPtr = newPath;
     	} else {
