@@ -31,7 +31,6 @@ void mkdir(char pathName[]) {
 	newPath->childPtr = NULL;
     	newPath->fileType = 'D';
     	strncpy(newPath->name, pathName, 64);
-    	newPath->parentPtr = cwd;
     	newPath->siblingPtr = NULL;
 
     	//insert node
@@ -39,6 +38,7 @@ void mkdir(char pathName[]) {
 	char baseName[64];
 	struct NODE* dirToInsert = splitPath(pathName, baseName, dirName);
 	strncpy(newPath->name, baseName, 64);
+	newPath->parentPtr = dirToInsert;
 	if (dirToInsert == NULL) {
 		return;
 	}
