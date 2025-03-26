@@ -10,7 +10,7 @@ extern struct NODE* cwd;
 void mkdir(char pathName[]) {
 	//check if dir is empty
 	if (strcmp(pathName, "/") == 0) {
-		printf("MKDIR ERROR: no valid path provided\n");
+		printf("MKDIR ERROR: no path provided\n");
 		return;
 	}
 
@@ -51,7 +51,7 @@ void mkdir(char pathName[]) {
         	temp->siblingPtr = newPath;
     	}
 
-    	printf("MKDIR SUCCESS: directory %s successfully created\n", pathName);
+    	printf("MKDIR SUCCESS: node %s successfully created\n", pathName);
 }
 
 //handles tokenizing and absolute/relative pathing options
