@@ -1,4 +1,4 @@
-#include "types.h"
+#include "types.h" 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -35,10 +35,16 @@ void mkdir(char pathName[]) {
     	newPath->siblingPtr = NULL;
 
     	//insert node
-    	if (cwd->childPtr == NULL) {
-        	cwd->childPtr = newPath;
+	char dirName[64];
+	char baseName[64];
+	struct NODE* dirToInsert = splitPath(pathName, baseName, dirName);
+	if (dirToInsert == NULL) {
+		return;
+	}
+	if (dirToInsert->childPtr == NULL) {
+        	dirToInsert->childPtr = newPath;
     	} else {
-        	struct NODE* temp = cwd->childPtr;
+        	struct NODE* temp = dirToInsert->childPtr;
         	while (temp->siblingPtr != NULL) {
             		temp = temp->siblingPtr;
         	}
@@ -50,26 +56,26 @@ void mkdir(char pathName[]) {
 
 //handles tokenizing and absolute/relative pathing options
 struct NODE* splitPath(char* pathName, char* baseName, char* dirName) {
-	printf("the path is: %s", pathName);
+	//printf("the path is: %s", pathName);
 	struct NODE* currentNode = (pathName[0] == '/') ? root : cwd;
-	char* tempPathName = strdup(pathName);
 
-	baseName = strrchr(tempPathName, '/');
-	if (baseName != NULL) {
-        	baseName++; //exclude the /
-   	} else {
-		baseName = tempPathName;
+	int lastSlash = -1;
+	int currentIndex = 0;
+	while(pathName[currentIndex] != '\0') {
+		if (pathName[currentIndex] == '/') {
+			lastSlash = currentIndex;
+		}
+		currentIndex++;
 	}
 
-	char* tempDirName = strdup(tempPathName);
-	dirName = strrchr(tempDirName, '/');
-	if (dirName != NULL) {
-        	*dirName = '\0'; // Replace '/' with null terminator to truncate the string
-    	} else {
-        	tempDirName[0] = '/';
-        	tempDirName[1] = '\0';
+	if (lastSlash != -1) {
+		strcpy(baseName, pathName + lastSlash + 1);
+	        strncpy(dirName, pathName, lastSlash);
+	        dirName[lastSlash] = '\0';
+	} else {
+		strcpy(dirName, "");
+		strcpy(baseName, pathName);
 	}
-	dirName = tempDirName;
 
 	//printf("The current baseName (filename) is %s", baseName);
 	//printf(" and the current dirName is %s.\n", dirName);
@@ -86,40 +92,12 @@ struct NODE* splitPath(char* pathName, char* baseName, char* dirName) {
 		if (child == NULL) // not found
 		{
 			printf("ERROR: directory %s does not exist\n", dirName);
-			free(tempPathName);
 			return NULL;
 		}
 		//parentNode = currentNode;
 		currentNode = child; // we traverse the tree to the next depth with this assignment
 		currentDirName = strtok(NULL,"/"); // now in the next iteration look for the next directory name
 	}
-	if (currentNode != NULL) {
-		free(tempPathName);
-		free(tempDirName);
-        	return currentNode;
-	}
-	struct NODE* newPath = (struct NODE*) malloc(sizeof(struct NODE));
-	newPath->childPtr = NULL;
-       	newPath->fileType = 'F';
-       	strcpy(newPath->name, baseName);
-	//printf("AAAAAAAAAAAAAAAAAAAAAAthe file name is %s", baseName);
-       	newPath->parentPtr = currentNode;
-	newPath->siblingPtr = NULL;
-	if (currentNode->childPtr == NULL) {
-       	        currentNode->childPtr = newPath;
-        } else {
-      		struct NODE* temp = currentNode->childPtr;
-                while (temp->siblingPtr != NULL) {
-               		 temp = temp->siblingPtr;
-                }
-                temp->siblingPtr = newPath;
-        }
-
-	free(tempPathName);
-	free(tempDirName);
-	return newPath;
+	return currentNode;
 	// currentNode at this point will point to the parent of "baseName" which is what we want
 }
-
-//compile with `gcc *.c *.o -o proj_2`
-
